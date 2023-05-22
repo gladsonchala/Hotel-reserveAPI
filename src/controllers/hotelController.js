@@ -23,7 +23,7 @@ exports.getHotelById = async (req, res, next) => {
   }
 };
 
-// POST /hotels - Creates a new hotel with the provided details
+// POST /hotels - Creates a new hotel
 exports.createHotel = async (req, res, next) => {
   try {
     const hotel = await Hotel.create(req.body);
