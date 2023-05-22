@@ -4,12 +4,14 @@ const apiKeySchema = new mongoose.Schema({
   key: {
     type: String,
     required: true,
+    unique: true,
   },
-  permissions: {
-    type: String,
-    enum: ['read', 'readwrite'],
-    required: true,
+  isAdmin: {
+    type: Boolean,
+    default: false,
   },
 });
 
-module.exports = mongoose.model('ApiKey', apiKeySchema);
+const ApiKey = mongoose.model('ApiKey', apiKeySchema);
+
+module.exports = ApiKey;
