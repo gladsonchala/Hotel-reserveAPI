@@ -1,18 +1,31 @@
 const jwt = require('jsonwebtoken');
 
-const apiSecret = process.env.API_SECRET;
+const authenticate = (req, res, next) => {
+  // Extract the token from the request headers or query parameters
+  const token = req.headers.authorization || req.query.token;
 
-exports.authenticate = (req, res, next) => {
-  const token = req.header('Authorization');
   if (!token) {
-    return res.status(401).json({ error: 'Access denied. Missing token.' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
   try {
-    const decoded = jwt.verify(token, apiSecret);
-    req.user = decoded;
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Attach the user information to the request object
+    req.user = decoded.user;
     next();
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid token.' });
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid token' });
   }
 };
+
+const authorize = (role) => (req, res, next) => {
+  if (req.user.role !== role) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  next();
+};
+
+module.exports = { authenticate, authorize };
